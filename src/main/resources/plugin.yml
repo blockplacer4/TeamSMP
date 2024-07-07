@@ -1,0 +1,23 @@
+name: TeamSMP
+version: '${project.version}'
+main: de.janoschbl.teamsmp.Main
+api-version: '1.20'
+commands:
+  team:
+    description: Team management commands
+    usage: /team <create|add|remove|chat> [args]
+    permission: team.use
+    permission-message: You don't have permission to use this command.
+permissions:
+  team.create:
+    description: Allows the staff team to create a team
+    default: op
+  team.add:
+    description: Allows the staff team to add players to a team
+    default: op
+  team.remove:
+    description: Allows the staff team to remove players from a team
+    default: op
+  team.chat:
+    description: Allows the user to use team chat
+    default: true
