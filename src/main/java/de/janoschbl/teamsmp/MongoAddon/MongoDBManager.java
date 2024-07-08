@@ -5,8 +5,8 @@ import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.util.UUID;
 
 public class MongoDBManager {
@@ -24,15 +24,17 @@ public class MongoDBManager {
         teamCollection.insertOne(team.toDocument());
     }
 
+    public void deleteTeam(Team team) {
+        teamCollection.deleteOne(team.toDocument());
+    }
 
-    public Team getTeamById(ObjectId id) {
-        Document doc = teamCollection.find(Filters.eq("_id", id)).first();
+    public Team getTeamByUser(String uuid) {
+        Document doc = teamCollection.find(Filters.elemMatch("members", Filters.eq(uuid))).first();
         if (doc != null) {
             return Team.fromDocument(doc);
         }
         return null;
     }
-
 
     public Team getTeamByName(String name) {
         Document doc = teamCollection.find(Filters.eq("name", name)).first();
@@ -42,27 +44,9 @@ public class MongoDBManager {
         return null;
     }
 
-
-    public List<Team> getAllTeams() {
-        List<Team> teams = new ArrayList<>();
-        for (Document doc : teamCollection.find()) {
-            teams.add(Team.fromDocument(doc));
-        }
-        return teams;
-    }
-
-
-    public void updateTeam(ObjectId id, Team updatedTeam) {
-        teamCollection.updateOne(Filters.eq("_id", id), new Document("$set", updatedTeam.toDocument()));
-    }
-
-
-    public void deleteTeam(ObjectId id) {
-        teamCollection.deleteOne(Filters.eq("_id", id));
-    }
-
-
     public void addMemberToTeam(ObjectId teamId, UUID member) {
+        System.out.println(teamId);
+        System.out.println(member);
         teamCollection.updateOne(Filters.eq("_id", teamId), new Document("$addToSet", new Document("members", member.toString())));
     }
 

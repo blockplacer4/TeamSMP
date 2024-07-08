@@ -64,6 +64,9 @@ public class Team {
                 document.getString("tag"),
                 UUID.fromString(document.getString("leader"))
         );
+
+        team.id = document.getObjectId("_id");
+
         List<String> memberStrings = (List<String>) document.get("members");
         for (String member : memberStrings) {
             team.addMember(UUID.fromString(member));
