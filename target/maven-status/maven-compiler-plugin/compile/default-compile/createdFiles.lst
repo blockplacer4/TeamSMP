@@ -1,4 +1,7 @@
-de\janoschbl\teamsmp\commands\TeamCommand.class
+de\janoschbl\teamsmp\listeners\TeamFriendlyFire.class
 de\janoschbl\teamsmp\Main.class
 de\janoschbl\teamsmp\MongoAddon\MongoDBManager.class
 de\janoschbl\teamsmp\MongoAddon\Team.class
+de\janoschbl\teamsmp\commands\TeamCommand.class
+de\janoschbl\teamsmp\commands\TeamTabComplete.class
+de\janoschbl\teamsmp\listeners\PlayerDeath.class

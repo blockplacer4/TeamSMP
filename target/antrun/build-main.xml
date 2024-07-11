@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-antrun-" default="main">
+  <target name="main">
+    <copy file="C:\Users\Janosch\Documents\GitHub\TeamSMP\target/TeamSMP-1.0-SNAPSHOT.jar" todir="C:\Users\Janosch\Desktop\spigot/plugins" />
+    <exec dir="C:\Users\Janosch\Desktop\spigot" executable="cmd">
+      <arg value="/c" />
+      <arg value="start" />
+      <arg value="java" />
+      <arg value="-jar" />
+      <arg value="server.jar" />
+      <arg value="nogui" />
+    </exec>
+  </target>
+</project>

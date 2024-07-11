@@ -1,4 +1,4 @@
-name: TeamSMP
+name: RotsteinManagement
 version: '${project.version}'
 main: de.janoschbl.teamsmp.Main
 api-version: '1.20'
@@ -6,6 +6,9 @@ commands:
   team:
     description: Team management commands
 permissions:
+  team.delete:
+    description: Allows the staff team to delete a team
+    default: op
   team.create:
     description: Allows the staff team to create a team
     default: op
