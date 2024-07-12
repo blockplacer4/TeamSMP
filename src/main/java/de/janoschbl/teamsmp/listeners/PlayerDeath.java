@@ -33,10 +33,16 @@ public class PlayerDeath implements Listener {
             }
             dbManager.removeHeartFromTeam(team.getId());
             List<UUID> members = team.getMembers();
+            Integer hearts = team.getHearts();
             for (UUID member : members) {
                 Player memberPlayer = Bukkit.getServer().getPlayer(member);
                 if (memberPlayer != null) {
                     memberPlayer.sendMessage("§c§lRotstein >> §7Euer Team hat §c1 Herz §7verloren | §9" + player.getName() + " §7ist gestorben");
+                    memberPlayer.setHealthScale(hearts * 2);
+                    if (memberPlayer.getHealth() < hearts) {
+                        return;
+                    }
+                    memberPlayer.setHealth(hearts);
                 }
             }
         }

@@ -4,6 +4,7 @@ import de.janoschbl.teamsmp.MongoAddon.MongoDBManager;
 import de.janoschbl.teamsmp.commands.TeamCommand;
 import de.janoschbl.teamsmp.commands.TeamTabComplete;
 import de.janoschbl.teamsmp.listeners.PlayerDeath;
+import de.janoschbl.teamsmp.listeners.PlayerJoin;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
@@ -39,6 +40,7 @@ public final class Main extends JavaPlugin {
         getCommand("team").setTabCompleter(new TeamTabComplete(dbManager));
 
         Bukkit.getPluginManager().registerEvents(new PlayerDeath(dbManager), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerJoin(dbManager), this);
 
         getLogger().info("TeamSMP enabled.");
     }
