@@ -26,6 +26,8 @@ public class TeamCommand implements CommandExecutor {
     private final MongoDBManager dbManager;
     private final LuckPerms luckPerms;
 
+    private final String prefix = Main.getProvidingPlugin(Main.class).getConfig().getString("server.settings.prefix");
+
     public TeamCommand(MongoDBManager dbManager, LuckPerms luckPerms) {
         this.dbManager = dbManager;
         this.luckPerms = luckPerms;
@@ -35,10 +37,10 @@ public class TeamCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length < 1) {
             if (sender.hasPermission("team.admin")) {
-                sender.sendMessage("§c§lRotstein >> §7Usage: /team <create|add|remove|chat|delete> [args]");
+                sender.sendMessage(STR."\{prefix}Usage: /team <create|add|remove|chat|delete> [args]");
             }
             else {
-                sender.sendMessage("§c§lRotstein >> §7Usage: /team chat <message> or /tc <message>");
+                sender.sendMessage(STR."\{prefix}Usage: /team chat <message> or /tc <message>");
             }
             return true;
         }
@@ -48,7 +50,7 @@ public class TeamCommand implements CommandExecutor {
         switch (subCommand) {
             case "create":
                 if (!sender.hasPermission("team.create")) {
-                    sender.sendMessage("§c§lRotstein >> §7Usage: /team chat <message> or /tc <message>");
+                    sender.sendMessage(STR."\{prefix}Usage: /team chat <message> or /tc <message>");
                     return true;
                 }
                 handleCreate(sender, args);
@@ -56,7 +58,7 @@ public class TeamCommand implements CommandExecutor {
 
             case "add":
                 if (!sender.hasPermission("team.add")) {
-                    sender.sendMessage("§c§lRotstein >> §7Usage: /team chat <message> or /tc <message>");
+                    sender.sendMessage(STR."\{prefix}Usage: /team chat <message> or /tc <message>");
                     return true;
                 }
                 handleAdd(sender, args);
@@ -64,7 +66,7 @@ public class TeamCommand implements CommandExecutor {
 
             case "remove":
                 if (!sender.hasPermission("team.remove")) {
-                    sender.sendMessage("§c§lRotstein >> §7Usage: /team chat <message> or /tc <message>");
+                    sender.sendMessage(STR."\{prefix}Usage: /team chat <message> or /tc <message>");
                     return true;
                 }
                 handleRemove(sender, args);
@@ -76,7 +78,7 @@ public class TeamCommand implements CommandExecutor {
 
             case "delete":
                 if (!sender.hasPermission("team.delete")) {
-                    sender.sendMessage("§c§lRotstein >> §7Usage: /team chat <message> or /tc <message>");
+                    sender.sendMessage(STR."\{prefix}Usage: /team chat <message> or /tc <message>");
                     return true;
                 }
                 handleDelete(sender, args);
@@ -84,10 +86,10 @@ public class TeamCommand implements CommandExecutor {
 
             default:
                 if (sender.hasPermission("team.admin")) {
-                    sender.sendMessage("§c§lRotstein >> §7Usage: /team <create|add|remove|chat|delete> [args]");
+                    sender.sendMessage(STR."\{prefix}Usage: /team <create|add|remove|chat|delete> [args]");
                 }
                 else {
-                    sender.sendMessage("§c§lRotstein >> §7Usage: /team chat <message> or /tc <message>");
+                    sender.sendMessage(STR."\{prefix}Usage: /team chat <message> or /tc <message>");
                 }
                 break;
         }
@@ -97,7 +99,7 @@ public class TeamCommand implements CommandExecutor {
 
     private void handleCreate(CommandSender sender, String[] args) {
         if (args.length < 6) {
-            sender.sendMessage("§c§lRotstein >> §7Usage: /team create <name> <tag> <leader> <color> [hearts]");
+            sender.sendMessage(STR."\{prefix}Usage: /team create <name> <tag> <leader> <color> [hearts]");
             return;
         }
 
@@ -108,17 +110,17 @@ public class TeamCommand implements CommandExecutor {
         Integer hearts = Integer.valueOf(args[5]);
 
         if (leader == null) {
-            sender.sendMessage("§c§lRotstein >> §7Leader not found.");
+            sender.sendMessage(STR."\{prefix}Leader not found.");
             return;
         }
 
         if (dbManager.getTeamByName(name) != null) {
-            sender.sendMessage("§c§lRotstein >> §7Team already exists.");
+            sender.sendMessage(STR."\{prefix}Team already exists.");
             return;
         }
 
         Team team = new Team(name, tag, leader.getUniqueId(), color, hearts);
-        sender.sendMessage("§c§lRotstein >> §7Team created successfully.");
+        sender.sendMessage(STR."\{prefix}Team created successfully.");
 
         // database -> create document
         dbManager.addTeam(team);
@@ -128,7 +130,7 @@ public class TeamCommand implements CommandExecutor {
         // luckperms create group
         Group group = luckPerms.getGroupManager().createAndLoadGroup(team.getName()).join();
         ChatColor chatcolor = Main.teamColors.getOrDefault(team.getColor(), ChatColor.WHITE);
-        Node prefixNode = Node.builder("prefix.10." + chatcolor + team.getName() + "§8 | §7").build();
+        Node prefixNode = Node.builder("prefix.10." + chatcolor + team.getTag() + "§8 | §7").build();
         group.data().add(prefixNode);
         luckPerms.getGroupManager().saveGroup(group);
 
@@ -145,7 +147,7 @@ public class TeamCommand implements CommandExecutor {
 
     private void handleAdd(CommandSender sender, String[] args) {
         if (args.length < 3) {
-            sender.sendMessage("§c§lRotstein >> §7Usage: /team add <teamName> <player>");
+            sender.sendMessage(STR."\{prefix}Usage: /team add <teamName> <player>");
             return;
         }
 
@@ -153,13 +155,13 @@ public class TeamCommand implements CommandExecutor {
         Player player = Bukkit.getPlayer(args[2]);
 
         if (player == null) {
-            sender.sendMessage("§c§lRotstein >> §7Player not found.");
+            sender.sendMessage(STR."\{prefix}Player not found.");
             return;
         }
 
         Team team = dbManager.getTeamByName(teamName);
         if (team == null) {
-            sender.sendMessage("§c§lRotstein >> §7Team not found.");
+            sender.sendMessage(STR."\{prefix}Team not found.");
             return;
         }
 
@@ -173,10 +175,10 @@ public class TeamCommand implements CommandExecutor {
         }
 
         if (found) {
-            sender.sendMessage("§c§lRotstein >> §7The player is already part of the team");
+            sender.sendMessage(STR."\{prefix}The player is already part of the team");
             return;
         }
-        sender.sendMessage("§c§lRotstein >> §7Player added to the team.");
+        sender.sendMessage(STR."\{prefix}Player added to the team.");
 
         // add to database
         dbManager.addMemberToTeam(team.getId(), player.getUniqueId());
@@ -194,7 +196,7 @@ public class TeamCommand implements CommandExecutor {
 
     private void handleDelete(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage("§c§lRotstein >> §7Usage: /team delete <teamName>");
+            sender.sendMessage(STR."\{prefix}Usage: /team delete <teamName>");
             return;
         }
 
@@ -202,10 +204,10 @@ public class TeamCommand implements CommandExecutor {
 
         Team team = dbManager.getTeamByName(teamName);
         if (team == null) {
-            sender.sendMessage("§c§lRotstein >> §7Team not found.");
+            sender.sendMessage(STR."\{prefix}Team not found.");
             return;
         }
-        sender.sendMessage("§c§lRotstein >> §7Team deleted.");
+        sender.sendMessage(STR."\{prefix}Team deleted.");
 
         // handle Team deletion in Database X,x
         dbManager.deleteTeam(team);
@@ -218,7 +220,7 @@ public class TeamCommand implements CommandExecutor {
 
     private void handleRemove(CommandSender sender, String[] args) {
         if (args.length < 3) {
-            sender.sendMessage("§c§lRotstein >> §7Usage: /team remove <teamName> <player>");
+            sender.sendMessage(STR."\{prefix}Usage: /team remove <teamName> <player>");
             return;
         }
 
@@ -226,13 +228,13 @@ public class TeamCommand implements CommandExecutor {
         Player player = Bukkit.getPlayer(args[2]);
 
         if (player == null) {
-            sender.sendMessage("§c§lRotstein >> §7Player not found.");
+            sender.sendMessage(STR."\{prefix}Player not found.");
             return;
         }
 
         Team team = dbManager.getTeamByName(teamName);
         if (team == null) {
-            sender.sendMessage("§c§lRotstein >> §7Team not found.");
+            sender.sendMessage(STR."\{prefix}Team not found.");
             return;
         }
 
@@ -246,23 +248,39 @@ public class TeamCommand implements CommandExecutor {
         }
 
         if (!found) {
-            sender.sendMessage("§c§lRotstein >> §7The player is not part of this team.");
+            sender.sendMessage(STR."\{prefix}The player is not part of this team.");
             return;
         }
 
 
         dbManager.removeMemberFromTeam(team.getId(), player.getUniqueId());
-        sender.sendMessage("§c§lRotstein >> §7Player removed from the team.");
+        sender.sendMessage(STR."\{prefix}Player removed from the team.");
     }
 
     private void handleChat(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage("§c§lRotstein >> §7This command can only be used by players.");
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(STR."\{prefix}This command can only be used by players.");
             return;
         }
 
-        Player player = (Player) sender;
-        // Implement team chat functionality here
-        sender.sendMessage("§c§lRotstein >> §7Team chat functionality not implemented yet.");
+        if (args.length < 2) {
+            sender.sendMessage(STR."\{prefix}Usage: /team chat <message>");
+            return;
+        }
+
+        Team team = dbManager.getTeamByUUID(player.getUniqueId());
+        if (team == null) {
+            player.sendMessage(STR."\{prefix}§4§lError #2301BA §7- please contact the Staff Team via the ticket support in the Discord immediately!");
+            return;
+        }
+        List<UUID> members = team.getMembers();
+        String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+
+        for (UUID member : members) {
+            Player memberPlayer = Bukkit.getServer().getPlayer(member);
+            if (memberPlayer != null) {
+                memberPlayer.sendMessage(STR."§cTeam Chat §8|§7 \{sender.getName()} §7>>§f \{message}");
+            }
+        }
     }
 }

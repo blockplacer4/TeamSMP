@@ -4,27 +4,26 @@ import de.janoschbl.teamsmp.Main;
 import de.janoschbl.teamsmp.MongoAddon.MongoDBManager;
 import de.janoschbl.teamsmp.MongoAddon.Team;
 import org.bukkit.Bukkit;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
-public class PlayerJoin implements Listener {
+public class PlayerRespawn implements Listener {
 
     private final MongoDBManager dbManager;
     private final String prefix = Main.getProvidingPlugin(Main.class).getConfig().getString("server.settings.prefix");
 
-    public PlayerJoin(MongoDBManager dbManager) {
+    public PlayerRespawn(MongoDBManager dbManager) {
         this.dbManager = dbManager;
+
     }
 
     @EventHandler
-    public void OnPlayerJoin(PlayerJoinEvent event) {
+    public void OnPlayerRespawn(PlayerRespawnEvent event)  {
         Player player = event.getPlayer();
         Team team = dbManager.getTeamByUUID(player.getUniqueId());
         if (team == null) {
@@ -32,17 +31,15 @@ public class PlayerJoin implements Listener {
             return;
         }
         Integer hearts = team.getHearts();
-
-        double maxHealth = hearts * 2.0;
-        player.setHealthScale(maxHealth);
-
+        player.setHealthScale(hearts * 2);
+        player.setHealth(hearts * 2);
         List<UUID> members = team.getMembers();
         for (UUID member : members) {
             Player memberPlayer = Bukkit.getServer().getPlayer(member);
             if (memberPlayer != null) {
-                memberPlayer.setHealthScale(maxHealth);
+                memberPlayer.setHealthScale(hearts * 2);
+                memberPlayer.setHealth(hearts * 2);
             }
         }
     }
-
 }

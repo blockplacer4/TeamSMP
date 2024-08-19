@@ -1,7 +1,6 @@
-package de.janoschbl.teamsmp.commands;
+package de.janoschbl.teamsmp.TabCompletion;
 
 import de.janoschbl.teamsmp.MongoAddon.MongoDBManager;
-import de.janoschbl.teamsmp.MongoAddon.Team;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
